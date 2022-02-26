@@ -29,7 +29,7 @@ const COLS = [
 	}
 ];
 
-export default class CommunityPunchPasses extends LightningElement {
+export default class CommunityPunchPassesTwo extends LightningElement {
 	isLoading = true;
 	error;
 
@@ -51,7 +51,7 @@ export default class CommunityPunchPasses extends LightningElement {
 	numHouseholdActivePunchPasses = 0;
 
 	get cardTitle() {
-		return this.accountName != null ? 'Punch Passes for ' + this.accountName : 'Punch Passes';
+		return 'Punch Passes for ' + this.accountName;
 	}
 
 	get activePunchPassesSectionLabel() {

@@ -1,80 +1,82 @@
 <template>
-	<template if:true={accountName}>
-		<!-- LIGHTNING CARD -->
-		<lightning-card title={cardTitle} icon-name="custom:custom95">
+	<!-- LIGHTNING CARD -->
+	<lightning-card title={cardTitle} icon-name="custom:custom95">
 
-			<lightning-accordion allow-multiple-sections-open>
+		<!-- SPINNER ON LOAD -->
+		<lightning-spinner if:true={isLoading} alternative-text="Loading" variant="brand" size="medium"></lightning-spinner>
 
-				<!-- ACTIVE PUNCH PASSES -->
-				<lightning-accordion-section name="Active Punch Passes" label="Active Punch Passes">
-					<template if:true={contactsWithActivePunchPasses}>
-						<lightning-accordion allow-multiple-sections-open>
-							<template for:each={contactsWithActivePunchPasses} for:item="cont">
-								<lightning-accordion-section 
-									name={cont.fullName} 
-									label={cont.fullName} 
-									key={cont.Id}
-								>
-									<template if:true={cont.TREX1__Memberships__r}>
-										<!-- sldsValidatorIgnoreNextLine -->
-										<lightning-datatable
-											data={cont.TREX1__Memberships__r}
-											columns={cols}
-											key-field="Id"
-											column-widths-mode="auto"
-											resize-column-disabled
-											hide-checkbox-column
-										></lightning-datatable>
-									</template>
-									<template if:false={cont.TREX1__Memberships__r}>
-										<p>This contact does not have any active punch pass memberships</p>
-									</template>
-		
-								</lightning-accordion-section>
-							</template>
-						</lightning-accordion>
-					</template>		
-					<template if:false={contactsWithActivePunchPasses}>
-						No Active Punch Passes
-					</template>
-				</lightning-accordion-section>
+		<lightning-accordion allow-multiple-sections-open>
 
-				<!-- COMPLETED PUNCH PASSES -->
-				<lightning-accordion-section name="Completed Punch Passes" label="Completed Punch Passes">
-					<template if:true={contactsWithCompletedPunchPasses}>
-						<lightning-accordion allow-multiple-sections-open>
-							<template for:each={contactsWithCompletedPunchPasses} for:item="cont">
-								<lightning-accordion-section 
-									name={cont.fullName} 
-									label={cont.fullName} 
-									key={cont.Id}
-								>
-									<template if:true={cont.TREX1__Memberships__r}>
-										<!-- sldsValidatorIgnoreNextLine -->
-										<lightning-datatable
-											data={cont.TREX1__Memberships__r}
-											columns={cols}
-											key-field="Id"
-											column-widths-mode="auto"
-											resize-column-disabled
-											hide-checkbox-column
-										></lightning-datatable>
-									</template>
-									<template if:false={cont.TREX1__Memberships__r}>
-										<p>This contact does not have any active punch pass memberships</p>
-									</template>
-		
-								</lightning-accordion-section>
-							</template>
-						</lightning-accordion>
-					</template>		
-					<template if:false={contactsWithCompletedPunchPasses}>
-						No Completed Punch Passes
-					</template>
+			<!-- ACTIVE PUNCH PASSES -->
+			<lightning-accordion-section name="Active Punch Passes" label={activePunchPassesSectionLabel}>
+				<template if:true={contactsWithActivePunchPasses}>
+					
+					<lightning-accordion allow-multiple-sections-open>
+						<template for:each={contactsWithActivePunchPasses} for:item="cont">
+							<lightning-accordion-section 
+								name={cont.fullName} 
+								label={cont.fullName} 
+								key={cont.Id}
+							>
+								<template if:true={cont.TREX1__Memberships__r}>
+									<!-- sldsValidatorIgnoreNextLine -->
+									<lightning-datatable
+										data={cont.TREX1__Memberships__r}
+										columns={cols}
+										key-field="Id"
+										column-widths-mode="auto"
+										resize-column-disabled
+										hide-checkbox-column
+									></lightning-datatable>
+								</template>
+								<template if:false={cont.TREX1__Memberships__r}>
+									<p>{noActivePunchPassesDescriptionContact}</p>
+								</template>
+	
+							</lightning-accordion-section>
+						</template>
+					</lightning-accordion>
+				</template>		
+				<template if:false={contactsWithActivePunchPasses}>
+					{noActivePunchPassesDescription}
+				</template>
+			</lightning-accordion-section>
 
-				</lightning-accordion-section>
-			</lightning-accordion>
+			<!-- COMPLETED PUNCH PASSES -->
+			<lightning-accordion-section name="Completed Punch Passes" label={completedPunchPassesSectionLabel}>
+				<template if:true={contactsWithCompletedPunchPasses}>
+					<lightning-accordion allow-multiple-sections-open>
+						<template for:each={contactsWithCompletedPunchPasses} for:item="cont">
+							<lightning-accordion-section 
+								name={cont.fullName} 
+								label={cont.fullName} 
+								key={cont.Id}
+							>
+								<template if:true={cont.TREX1__Memberships__r}>
+									<!-- sldsValidatorIgnoreNextLine -->
+									<lightning-datatable
+										data={cont.TREX1__Memberships__r}
+										columns={cols}
+										key-field="Id"
+										column-widths-mode="auto"
+										resize-column-disabled
+										hide-checkbox-column
+									></lightning-datatable>
+								</template>
+								<template if:false={cont.TREX1__Memberships__r}>
+									<p>{noCompletedPunchPassesDescriptionContact}</p>
+								</template>
+	
+							</lightning-accordion-section>
+						</template>
+					</lightning-accordion>
+				</template>		
+				<template if:false={contactsWithCompletedPunchPasses}>
+					{noCompletedPunchPassesDescription}
+				</template>
 
-		</lightning-card>
-	</template>
+			</lightning-accordion-section>
+		</lightning-accordion>
+
+	</lightning-card>
 </template>

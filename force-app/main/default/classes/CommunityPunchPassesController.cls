@@ -12,7 +12,7 @@ public with sharing class CommunityPunchPassesController {
                    (SELECT Id, Name, TREX1__Contact__c, TREX1__Contact__r.Name, TREX1__Contact__r.FirstName,
                            TREX1__memb_Type__r.Name, TREX1__Type__c, TREX1__Category_Name__c, TREX1__Status__c,
                            TREX1__Account__r.Name, TREX1__Start_Date__c, TREX1__End_Date__c, 
-                           TREX1__Remaining_Value__c, TREX1__Stored_Value__c, TREX1__Total_Value__c 
+                           TREX1__Remaining_Value__c, TREX1__Stored_Value__c, TREX1__Total_Value__c, CreatedDate
                       FROM TREX1__Memberships__r
                      WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
                        AND TREX1__Remaining_Value__c > 0
@@ -38,7 +38,7 @@ public with sharing class CommunityPunchPassesController {
                    (SELECT Id, Name, TREX1__Contact__c, TREX1__Contact__r.Name, TREX1__Contact__r.FirstName,
                            TREX1__memb_Type__r.Name, TREX1__Type__c, TREX1__Category_Name__c, TREX1__Status__c,
                            TREX1__Account__r.Name, TREX1__Start_Date__c, TREX1__End_Date__c, 
-                           TREX1__Remaining_Value__c, TREX1__Stored_Value__c, TREX1__Total_Value__c 
+                           TREX1__Remaining_Value__c, TREX1__Stored_Value__c, TREX1__Total_Value__c, CreatedDate
                       FROM TREX1__Memberships__r
                      WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
                        AND TREX1__Status__c = :MEMBERSHIP_STATUS_COMPLETE
