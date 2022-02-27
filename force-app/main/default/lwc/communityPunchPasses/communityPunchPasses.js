@@ -63,6 +63,14 @@ export default class CommunityPunchPasses extends LightningElement {
 		return 'Completed Punch Passes (' + this.numHouseholdCompletedPunchPasses + ')';
 	}
 
+	get householdHasActivePunchPasses() {
+		return this.numHouseholdActivePunchPasses > 0 ? true : false;
+	}
+
+	get householdHasCompletedPunchPasses() {
+		return this.numHouseholdCompletedPunchPasses > 0 ? true : false;
+	}
+
 	@wire(getRecord, {
         recordId: USER_ID,
         fields: [CONTACTID_FIELD, ACCOUNTID_FIELD, ACCOUNTNAME_FIELD]

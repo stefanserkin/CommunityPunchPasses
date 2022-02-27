@@ -8,8 +8,11 @@
 		<lightning-accordion allow-multiple-sections-open>
 
 			<!-- ACTIVE PUNCH PASSES -->
-			<lightning-accordion-section name="Active Punch Passes" label={activePunchPassesSectionLabel}>
-				<template if:true={contactsWithActivePunchPasses}>
+			<lightning-accordion-section 
+				name="Active Punch Passes" 
+				label={activePunchPassesSectionLabel}
+			>
+				<template if:true={householdHasActivePunchPasses}>
 					
 					<lightning-accordion allow-multiple-sections-open>
 						<template for:each={contactsWithActivePunchPasses} for:item="cont">
@@ -30,21 +33,28 @@
 									></lightning-datatable>
 								</template>
 								<template if:false={cont.TREX1__Memberships__r}>
-									<p>{noActivePunchPassesDescriptionContact}</p>
+									<p class="slds-var-m-around_medium">
+										{noActivePunchPassesDescriptionContact}
+									</p>
 								</template>
 	
 							</lightning-accordion-section>
 						</template>
 					</lightning-accordion>
 				</template>		
-				<template if:false={contactsWithActivePunchPasses}>
-					{noActivePunchPassesDescription}
+				<template if:false={householdHasActivePunchPasses}>
+					<p class="slds-var-m-around_medium">
+						{noActivePunchPassesDescription}
+					</p>
 				</template>
 			</lightning-accordion-section>
 
 			<!-- COMPLETED PUNCH PASSES -->
-			<lightning-accordion-section name="Completed Punch Passes" label={completedPunchPassesSectionLabel}>
-				<template if:true={contactsWithCompletedPunchPasses}>
+			<lightning-accordion-section 
+				name="Completed Punch Passes" 
+				label={completedPunchPassesSectionLabel}
+			>
+				<template if:true={householdHasCompletedPunchPasses}>
 					<lightning-accordion allow-multiple-sections-open>
 						<template for:each={contactsWithCompletedPunchPasses} for:item="cont">
 							<lightning-accordion-section 
@@ -64,15 +74,19 @@
 									></lightning-datatable>
 								</template>
 								<template if:false={cont.TREX1__Memberships__r}>
-									<p>{noCompletedPunchPassesDescriptionContact}</p>
+									<p class="slds-var-m-around_medium">
+										{noCompletedPunchPassesDescriptionContact}
+									</p>
 								</template>
 	
 							</lightning-accordion-section>
 						</template>
 					</lightning-accordion>
 				</template>		
-				<template if:false={contactsWithCompletedPunchPasses}>
-					{noCompletedPunchPassesDescription}
+				<template if:false={householdHasCompletedPunchPasses}>
+					<p class="slds-var-m-around_medium">
+						{noCompletedPunchPassesDescription}
+					</p>
 				</template>
 
 			</lightning-accordion-section>
