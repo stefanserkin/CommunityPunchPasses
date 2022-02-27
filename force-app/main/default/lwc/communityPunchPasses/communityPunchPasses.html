@@ -15,7 +15,7 @@
 						<template for:each={contactsWithActivePunchPasses} for:item="cont">
 							<lightning-accordion-section 
 								name={cont.fullName} 
-								label={cont.fullName} 
+								label={cont.sectionLabel} 
 								key={cont.Id}
 							>
 								<template if:true={cont.TREX1__Memberships__r}>
@@ -49,7 +49,7 @@
 						<template for:each={contactsWithCompletedPunchPasses} for:item="cont">
 							<lightning-accordion-section 
 								name={cont.fullName} 
-								label={cont.fullName} 
+								label={cont.sectionLabel} 
 								key={cont.Id}
 							>
 								<template if:true={cont.TREX1__Memberships__r}>

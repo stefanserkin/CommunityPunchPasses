@@ -49,17 +49,18 @@ export default class CommunityPunchPasses extends LightningElement {
 	noCompletedPunchPassesDescriptionContact = 'This contact does not have any completed punch pass memberships';
 
 	numHouseholdActivePunchPasses = 0;
+	numHouseholdCompletedPunchPasses = 0;
 
 	get cardTitle() {
 		return this.accountName != null ? 'Punch Passes for ' + this.accountName : 'Punch Passes';
 	}
 
 	get activePunchPassesSectionLabel() {
-		return 'Active Punch Passes';
+		return 'Active Punch Passes (' + this.numHouseholdActivePunchPasses + ')';
 	}
 
 	get completedPunchPassesSectionLabel() {
-		return 'Completed Punch Passes';
+		return 'Completed Punch Passes (' + this.numHouseholdCompletedPunchPasses + ')';
 	}
 
 	@wire(getRecord, {
@@ -87,6 +88,9 @@ export default class CommunityPunchPasses extends LightningElement {
 			for (let i = 0; i < rows.length; i++) {
                 let dataParse = rows[i];
 				dataParse.fullName = dataParse.FirstName + ' ' + dataParse.LastName;
+				dataParse.numActivePunchPasses = dataParse.TREX1__Memberships__r.length;
+				dataParse.sectionLabel = dataParse.fullName + ' (' + dataParse.numActivePunchPasses + ')';
+				this.numHouseholdActivePunchPasses += dataParse.numActivePunchPasses;
 			}
 			
             this.contactsWithActivePunchPasses = rows;
@@ -108,6 +112,12 @@ export default class CommunityPunchPasses extends LightningElement {
 			for (let i = 0; i < rows.length; i++) {
                 let dataParse = rows[i];
 				dataParse.fullName = dataParse.FirstName + ' ' + dataParse.LastName;
+				dataParse.numCompletedPunchPasses = 
+					dataParse.TREX1__Memberships__r != null && dataParse.TREX1__Memberships__r.length > 0 ?
+					dataParse.TREX1__Memberships__r.length :
+					0;
+				dataParse.sectionLabel = dataParse.fullName + ' (' + dataParse.numCompletedPunchPasses + ')';
+				this.numHouseholdCompletedPunchPasses += dataParse.numCompletedPunchPasses;
 			}
             this.contactsWithCompletedPunchPasses = rows;
             this.error = undefined;
