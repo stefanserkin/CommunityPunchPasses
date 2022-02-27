@@ -1,5 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import { refreshApex } from '@salesforce/apex';
 import getActivePunchPassesByContact from '@salesforce/apex/CommunityPunchPassesController.getActivePunchPassesByContact';
 import getCompletedPunchPassesByContact from '@salesforce/apex/CommunityPunchPassesController.getCompletedPunchPassesByContact';
 
@@ -48,8 +49,8 @@ export default class CommunityPunchPasses extends LightningElement {
 	noActivePunchPassesDescriptionContact = 'This contact does not have any active punch pass memberships'
 	noCompletedPunchPassesDescriptionContact = 'This contact does not have any completed punch pass memberships';
 
-	numHouseholdActivePunchPasses = 0;
-	numHouseholdCompletedPunchPasses = 0;
+	numHouseholdActivePunchPasses;
+	numHouseholdCompletedPunchPasses;
 
 	get cardTitle() {
 		return this.accountName != null ? 'Punch Passes for ' + this.accountName : 'Punch Passes';
@@ -90,14 +91,23 @@ export default class CommunityPunchPasses extends LightningElement {
 	@wire(getActivePunchPassesByContact, { accountId: '$accountId' })
     wiredActivePunchPasses(result) {
 		this.wiredContactsWithActivePunchPasses = result;
+		this.numHouseholdActivePunchPasses = 0;
 	
         if (result.data) {
 			let rows = JSON.parse( JSON.stringify(result.data) );
 			for (let i = 0; i < rows.length; i++) {
                 let dataParse = rows[i];
+				let label = '';
 				dataParse.fullName = dataParse.FirstName + ' ' + dataParse.LastName;
-				dataParse.numActivePunchPasses = dataParse.TREX1__Memberships__r.length;
-				dataParse.sectionLabel = dataParse.fullName + ' (' + dataParse.numActivePunchPasses + ')';
+				dataParse.numActivePunchPasses = 
+					dataParse.TREX1__Memberships__r != null && dataParse.TREX1__Memberships__r.length > 0 ?
+					dataParse.TREX1__Memberships__r.length :
+					0;
+				label = dataParse.fullName + ' - ' + dataParse.numActivePunchPasses;
+				label += dataParse.numActivePunchPasses == 1 ?
+					' Active Punch Pass' :
+					' Active Punch Passes';
+				dataParse.sectionLabel = label;
 				this.numHouseholdActivePunchPasses += dataParse.numActivePunchPasses;
 			}
 			
@@ -114,17 +124,23 @@ export default class CommunityPunchPasses extends LightningElement {
 	@wire(getCompletedPunchPassesByContact, { accountId: '$accountId' })
     wiredCompletedPunchPasses(result) {
 		this.wiredContactsWithCompletedPunchPasses = result;
+		this.numHouseholdCompletedPunchPasses = 0;
 	
         if (result.data) {
 			let rows = JSON.parse( JSON.stringify(result.data) );
 			for (let i = 0; i < rows.length; i++) {
                 let dataParse = rows[i];
+				let label = '';
 				dataParse.fullName = dataParse.FirstName + ' ' + dataParse.LastName;
 				dataParse.numCompletedPunchPasses = 
 					dataParse.TREX1__Memberships__r != null && dataParse.TREX1__Memberships__r.length > 0 ?
 					dataParse.TREX1__Memberships__r.length :
 					0;
-				dataParse.sectionLabel = dataParse.fullName + ' (' + dataParse.numCompletedPunchPasses + ')';
+				label = dataParse.fullName + ' - ' + dataParse.numCompletedPunchPasses;
+				label += dataParse.numCompletedPunchPasses == 1 ?
+					' Completed Punch Pass' :
+					' Completed Punch Passes';
+				dataParse.sectionLabel = label;
 				this.numHouseholdCompletedPunchPasses += dataParse.numCompletedPunchPasses;
 			}
             this.contactsWithCompletedPunchPasses = rows;
@@ -136,6 +152,11 @@ export default class CommunityPunchPasses extends LightningElement {
 			this.isLoading = false;
         }
     }
+
+	refreshComponent() {
+		refreshApex(this.wiredContactsWithActivePunchPasses);
+		refreshApex(this.wiredContactsWithCompletedPunchPasses);
+	}
 
 
 }
