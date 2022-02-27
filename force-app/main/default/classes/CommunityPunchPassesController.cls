@@ -16,6 +16,7 @@ public with sharing class CommunityPunchPassesController {
                       FROM TREX1__Memberships__r
                      WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
                        AND TREX1__Remaining_Value__c > 0
+                       AND TREX1__End_Date__c >= TODAY
                      ORDER BY TREX1__End_Date__c ASC NULLS LAST)
               FROM Contact
              WHERE AccountId = :accountId
@@ -23,7 +24,7 @@ public with sharing class CommunityPunchPassesController {
                             FROM TREX1__Membership__c
                            WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
                              AND TREX1__Remaining_Value__c > 0)
-              //WITH SECURITY_ENFORCED
+              WITH SECURITY_ENFORCED
              ORDER BY FirstName ASC
              LIMIT 10000
         ];
@@ -53,7 +54,7 @@ public with sharing class CommunityPunchPassesController {
                              AND ((TREX1__Stored_Value__c > 0 
                                  AND TREX1__Remaining_Value__c = 0)
                               OR TREX1__Status__c = :MEMBERSHIP_STATUS_COMPLETE))
-              //WITH SECURITY_ENFORCED
+              WITH SECURITY_ENFORCED
              ORDER BY FirstName ASC
              LIMIT 10000
         ];
