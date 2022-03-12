@@ -16,7 +16,8 @@ public with sharing class CommunityPunchPassesController {
                       FROM TREX1__Memberships__r
                      WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
                        AND TREX1__Remaining_Value__c > 0
-                       AND TREX1__End_Date__c >= TODAY
+                       AND (TREX1__End_Date__c >= TODAY
+                           OR TREX1__End_Date__c = NULL)
                      ORDER BY TREX1__End_Date__c ASC NULLS LAST)
               FROM Contact
              WHERE AccountId = :accountId
