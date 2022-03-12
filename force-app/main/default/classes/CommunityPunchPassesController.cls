@@ -8,10 +8,9 @@ public with sharing class CommunityPunchPassesController {
         String accountId,
         String strMembershipCategoryNames
     ) {
-        List<String> lstMembershipCategoryNames =
-            strMembershipCategoryNames != null ?
-            strMembershipCategoryNames.split(',') :
-            new List<String>();
+        List<String> lstMembershipCategoryNames = getListOfCategoriesFromString(
+            strMembershipCategoryNames
+        );
 
         return [
             SELECT Id, FirstName, LastName, 
@@ -44,10 +43,9 @@ public with sharing class CommunityPunchPassesController {
         String accountId,
         String strMembershipCategoryNames
     ) {
-        List<String> lstMembershipCategoryNames =
-            strMembershipCategoryNames != null ?
-            strMembershipCategoryNames.split(',') :
-            new List<String>();
+        List<String> lstMembershipCategoryNames = getListOfCategoriesFromString(
+            strMembershipCategoryNames
+        );
 
         return [
             SELECT Id, FirstName, LastName, 
@@ -75,6 +73,21 @@ public with sharing class CommunityPunchPassesController {
              ORDER BY FirstName ASC
              LIMIT 10000
         ];
+    }
+
+    private static List<String> getListOfCategoriesFromString(
+        String strMembershipCategoryNames
+    ) {
+        List<String> lstFormattedCategoryNames = new List<String>();
+        List<String> lstMembershipCategoryNames =
+            strMembershipCategoryNames != null ?
+            strMembershipCategoryNames.split(',') :
+            new List<String>();
+        for (String catName : lstMembershipCategoryNames) {
+            catName = catName.trim();
+            lstFormattedCategoryNames.add(catName);
+        }
+        return lstFormattedCategoryNames;
     }
 
 
