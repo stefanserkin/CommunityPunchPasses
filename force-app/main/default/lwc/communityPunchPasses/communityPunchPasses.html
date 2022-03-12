@@ -7,10 +7,8 @@
 			alternative-text="Refresh Component" 
 			title="Refresh"
 			onclick={refreshComponent}
-		>
-		<label></label>
+		><label></label>
 		</lightning-button-icon>
-
 
 		<!-- SPINNER ON LOAD -->
 		<lightning-spinner 
@@ -20,97 +18,100 @@
 			size="medium"
 		></lightning-spinner>
 
-		<lightning-accordion allow-multiple-sections-open>
+		<template if:false={householdHasPunchPassActivity}>
+			<p class="slds-var-m-around_medium">
+				{noPunchPassActivityDescription}
+			</p>
+		</template>
 
-			<!-- ACTIVE PUNCH PASSES -->
-			<lightning-accordion-section 
-				name="Active Punch Passes" 
-				label={activePunchPassesSectionLabel}
-				class="accordion-section"
-			>
+		<template if:true={householdHasPunchPassActivity}>
+			<lightning-accordion allow-multiple-sections-open>
 
-				<template if:true={householdHasActivePunchPasses}>
-					
-					<lightning-accordion allow-multiple-sections-open>
-						<template for:each={contactsWithActivePunchPasses} for:item="cont">
-							<lightning-accordion-section 
-								name={cont.fullName} 
-								label={cont.sectionLabel} 
-								key={cont.Id}
-								class="accordion-section"
-							>
-								<template if:true={cont.TREX1__Memberships__r}>
-									<!-- sldsValidatorIgnoreNextLine -->
-									<lightning-datatable
-										data={cont.TREX1__Memberships__r}
-										columns={cols}
-										key-field="Id"
-										column-widths-mode="auto"
-										resize-column-disabled
-										hide-checkbox-column
-									></lightning-datatable>
-								</template>
-								<template if:false={cont.TREX1__Memberships__r}>
-									<p class="slds-var-m-around_medium">
-										{noActivePunchPassesDescriptionContact}
-									</p>
-								</template>
+				<!-- ACTIVE PUNCH PASSES -->
+				<lightning-accordion-section 
+					name="Active Punch Passes" 
+					label={activePunchPassesSectionLabel}
+					class="accordion-section"
+				>
+					<template if:true={householdHasActivePunchPasses}>
+						<lightning-accordion allow-multiple-sections-open>
+							<template for:each={contactsWithActivePunchPasses} for:item="cont">
+								<lightning-accordion-section 
+									name={cont.fullName} 
+									label={cont.sectionLabel} 
+									key={cont.Id}
+									class="accordion-section"
+								>
+									<template if:true={cont.TREX1__Memberships__r}>
+										<!-- sldsValidatorIgnoreNextLine -->
+										<lightning-datatable
+											data={cont.TREX1__Memberships__r}
+											columns={cols}
+											key-field="Id"
+											column-widths-mode="auto"
+											resize-column-disabled
+											hide-checkbox-column
+										></lightning-datatable>
+									</template>
+									<template if:false={cont.TREX1__Memberships__r}>
+										<p class="slds-var-m-around_medium">
+											{noActivePunchPassesDescriptionContact}
+										</p>
+									</template>
+								</lightning-accordion-section>
+							</template>
+						</lightning-accordion>
+					</template>		
+					<template if:false={householdHasActivePunchPasses}>
+						<p class="slds-var-m-around_medium">
+							{noActivePunchPassesDescription}
+						</p>
+					</template>
+				</lightning-accordion-section>
 	
-							</lightning-accordion-section>
-						</template>
-					</lightning-accordion>
-				</template>		
-				<template if:false={householdHasActivePunchPasses}>
-					<p class="slds-var-m-around_medium">
-						{noActivePunchPassesDescription}
-					</p>
-				</template>
-			</lightning-accordion-section>
-
-			<!-- COMPLETED PUNCH PASSES -->
-			<lightning-accordion-section 
-				name="Completed Punch Passes" 
-				label={completedPunchPassesSectionLabel}
-				class="accordion-section"
-			>
-
-				<template if:true={householdHasCompletedPunchPasses}>
-					<lightning-accordion allow-multiple-sections-open>
-						<template for:each={contactsWithCompletedPunchPasses} for:item="cont">
-							<lightning-accordion-section 
-								name={cont.fullName} 
-								label={cont.sectionLabel} 
-								key={cont.Id}
-							>
-								<template if:true={cont.TREX1__Memberships__r}>
-									<!-- sldsValidatorIgnoreNextLine -->
-									<lightning-datatable
-										data={cont.TREX1__Memberships__r}
-										columns={cols}
-										key-field="Id"
-										column-widths-mode="auto"
-										resize-column-disabled
-										hide-checkbox-column
-									></lightning-datatable>
-								</template>
-								<template if:false={cont.TREX1__Memberships__r}>
-									<p class="slds-var-m-around_medium">
-										{noCompletedPunchPassesDescriptionContact}
-									</p>
-								</template>
-	
-							</lightning-accordion-section>
-						</template>
-					</lightning-accordion>
-				</template>		
-				<template if:false={householdHasCompletedPunchPasses}>
-					<p class="slds-var-m-around_medium">
-						{noCompletedPunchPassesDescription}
-					</p>
-				</template>
-
-			</lightning-accordion-section>
-		</lightning-accordion>
+				<!-- COMPLETED PUNCH PASSES -->
+				<lightning-accordion-section 
+					name="Completed Punch Passes" 
+					label={completedPunchPassesSectionLabel}
+					class="accordion-section"
+				>
+					<template if:true={householdHasCompletedPunchPasses}>
+						<lightning-accordion allow-multiple-sections-open>
+							<template for:each={contactsWithCompletedPunchPasses} for:item="cont">
+								<lightning-accordion-section 
+									name={cont.fullName} 
+									label={cont.sectionLabel} 
+									key={cont.Id}
+								>
+									<template if:true={cont.TREX1__Memberships__r}>
+										<!-- sldsValidatorIgnoreNextLine -->
+										<lightning-datatable
+											data={cont.TREX1__Memberships__r}
+											columns={cols}
+											key-field="Id"
+											column-widths-mode="auto"
+											resize-column-disabled
+											hide-checkbox-column
+										></lightning-datatable>
+									</template>
+									<template if:false={cont.TREX1__Memberships__r}>
+										<p class="slds-var-m-around_medium">
+											{noCompletedPunchPassesDescriptionContact}
+										</p>
+									</template>
+								</lightning-accordion-section>
+							</template>
+						</lightning-accordion>
+					</template>		
+					<template if:false={householdHasCompletedPunchPasses}>
+						<p class="slds-var-m-around_medium">
+							{noCompletedPunchPassesDescription}
+						</p>
+					</template>
+				</lightning-accordion-section>
+				
+			</lightning-accordion>
+		</template>
 
 	</lightning-card>
 </template>

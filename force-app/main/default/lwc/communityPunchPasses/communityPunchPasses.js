@@ -1,4 +1,4 @@
-import { LightningElement, api, wire } from 'lwc';
+import { LightningElement, wire } from 'lwc';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import getActivePunchPassesByContact from '@salesforce/apex/CommunityPunchPassesController.getActivePunchPassesByContact';
@@ -44,6 +44,7 @@ export default class CommunityPunchPasses extends LightningElement {
 	contactsWithCompletedPunchPasses;
 	wiredContactsWithCompletedPunchPasses = [];
 
+	noPunchPassActivityDescription = 'No Punch Pass Data';
 	noActivePunchPassesDescription = 'No Active Punch Passes';
 	noCompletedPunchPassesDescription = 'No Completed Punch Passes';
 	noActivePunchPassesDescriptionContact = 'This contact does not have any active punch pass memberships'
@@ -64,12 +65,19 @@ export default class CommunityPunchPasses extends LightningElement {
 		return 'Completed Punch Passes (' + this.numHouseholdCompletedPunchPasses + ')';
 	}
 
+	get householdHasPunchPassActivity() {
+		return (this.numHouseholdActivePunchPasses != null && this.numHouseholdActivePunchPasses > 0) || 
+			(this.numHouseholdCompletedPunchPasses != null && this.numHouseholdCompletedPunchPasses > 0) ? 
+			true : 
+			false;
+	}
+
 	get householdHasActivePunchPasses() {
-		return this.numHouseholdActivePunchPasses > 0 ? true : false;
+		return this.numHouseholdActivePunchPasses != null && this.numHouseholdActivePunchPasses > 0 ? true : false;
 	}
 
 	get householdHasCompletedPunchPasses() {
-		return this.numHouseholdCompletedPunchPasses > 0 ? true : false;
+		return this.numHouseholdCompletedPunchPasses != null && this.numHouseholdCompletedPunchPasses > 0 ? true : false;
 	}
 
 	@wire(getRecord, {
