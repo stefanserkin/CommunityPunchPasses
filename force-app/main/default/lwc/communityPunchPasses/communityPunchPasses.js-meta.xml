@@ -7,4 +7,26 @@
         <target>lightningCommunity__Default</target>
         <target>lightningCommunity__Page</target>
     </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property 
+                name="membershipCategoryNames" 
+                type="String" 
+                label="Membership Categories to Display"
+                description="Enter Membership Category Name to display, separated by commas"
+            />
+            <property 
+                name="packageReferenceNameSingular" 
+                type="String" 
+                label="Package Reference Name (Singular)"
+                default="Punch Pass"
+            />
+            <property 
+                name="packageReferenceNamePlural" 
+                type="String" 
+                label="Package Reference Name (Plural)"
+                default="Punch Passes"
+            />
+        </targetConfig>
+    </targetConfigs>
 </LightningComponentBundle>

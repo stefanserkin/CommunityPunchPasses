@@ -5,8 +5,14 @@ public with sharing class CommunityPunchPassesController {
 
     @AuraEnabled(cacheable=true)
     public static List<Contact> getActivePunchPassesByContact(
-        String accountId
+        String accountId,
+        String strMembershipCategoryNames
     ) {
+        List<String> lstMembershipCategoryNames =
+            strMembershipCategoryNames != null ?
+            strMembershipCategoryNames.split(',') :
+            new List<String>();
+
         return [
             SELECT Id, FirstName, LastName, 
                    (SELECT Id, Name, TREX1__Contact__c, TREX1__Contact__r.Name, TREX1__Contact__r.FirstName,
@@ -15,6 +21,7 @@ public with sharing class CommunityPunchPassesController {
                            TREX1__Remaining_Value__c, TREX1__Stored_Value__c, TREX1__Total_Value__c, CreatedDate
                       FROM TREX1__Memberships__r
                      WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
+                       AND TREX1__Category_Name__c IN :lstMembershipCategoryNames
                        AND TREX1__Remaining_Value__c > 0
                        AND (TREX1__End_Date__c >= TODAY
                            OR TREX1__End_Date__c = NULL)
@@ -24,6 +31,7 @@ public with sharing class CommunityPunchPassesController {
                AND Id IN (SELECT TREX1__Contact__c
                             FROM TREX1__Membership__c
                            WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
+                             AND TREX1__Category_Name__c IN :lstMembershipCategoryNames
                              AND TREX1__Remaining_Value__c > 0)
               WITH SECURITY_ENFORCED
              ORDER BY FirstName ASC
@@ -33,8 +41,14 @@ public with sharing class CommunityPunchPassesController {
 
     @AuraEnabled(cacheable=true)
     public static List<Contact> getCompletedPunchPassesByContact(
-        String accountId
+        String accountId,
+        String strMembershipCategoryNames
     ) {
+        List<String> lstMembershipCategoryNames =
+            strMembershipCategoryNames != null ?
+            strMembershipCategoryNames.split(',') :
+            new List<String>();
+
         return [
             SELECT Id, FirstName, LastName, 
                    (SELECT Id, Name, TREX1__Contact__c, TREX1__Contact__r.Name, TREX1__Contact__r.FirstName,
@@ -43,6 +57,7 @@ public with sharing class CommunityPunchPassesController {
                            TREX1__Remaining_Value__c, TREX1__Stored_Value__c, TREX1__Total_Value__c, CreatedDate
                       FROM TREX1__Memberships__r
                      WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
+                       AND TREX1__Category_Name__c IN :lstMembershipCategoryNames
                        AND ((TREX1__Stored_Value__c > 0 
                            AND TREX1__Remaining_Value__c = 0)
                         OR TREX1__Status__c = :MEMBERSHIP_STATUS_COMPLETE)
@@ -52,6 +67,7 @@ public with sharing class CommunityPunchPassesController {
                AND Id IN (SELECT TREX1__Contact__c
                             FROM TREX1__Membership__c
                            WHERE RecordType.DeveloperName = :PUNCH_PASS_RECORDTYPE_NAME
+                             AND TREX1__Category_Name__c IN :lstMembershipCategoryNames
                              AND ((TREX1__Stored_Value__c > 0 
                                  AND TREX1__Remaining_Value__c = 0)
                               OR TREX1__Status__c = :MEMBERSHIP_STATUS_COMPLETE))

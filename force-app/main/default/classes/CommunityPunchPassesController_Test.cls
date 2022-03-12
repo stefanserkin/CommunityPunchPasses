@@ -10,6 +10,7 @@ private class CommunityPunchPassesController_Test {
     private static final Integer COMPLETED_PUNCH_PASS_STORED_VALUE = 1;
     private static final Integer NUMBER_OF_CONTACTS = 5;
     private static final Integer NUMBER_OF_COMPLETED_MEMBERSHIPS = 1;
+    private static final String VALID_MEMBERSHIP_CATEGORY = 'Pilates';
 
     @TestSetup
     static void makeData() {
@@ -39,6 +40,7 @@ private class CommunityPunchPassesController_Test {
                 TREX1__Account__c = acc.Id, 
                 RecordTypeId = punchPassRecTypeId, 
                 TREX1__Status__c = STATUS_COMPLETE,
+                TREX1__Category_Name__c = VALID_MEMBERSHIP_CATEGORY,
                 TREX1__Start_Date__c = Date.today().addDays(-1),
                 TREX1__Stored_Value__c = 1
             )
@@ -51,6 +53,7 @@ private class CommunityPunchPassesController_Test {
                     TREX1__Account__c = acc.Id, 
                     RecordTypeId = punchPassRecTypeId, 
                     TREX1__Status__c = STATUS_ACTIVE,
+                    TREX1__Category_Name__c = VALID_MEMBERSHIP_CATEGORY,
                     TREX1__Start_Date__c = Date.today().addDays(-1),
                     TREX1__Stored_Value__c = 6
                 )
@@ -73,7 +76,10 @@ private class CommunityPunchPassesController_Test {
 
         Test.startTest();
         List<Contact> lstCtsWithActiveMems = new List<Contact>();
-        lstCtsWithActiveMems = CommunityPunchPassesController.getActivePunchPassesByContact(acc.Id);
+        lstCtsWithActiveMems = CommunityPunchPassesController.getActivePunchPassesByContact(
+            acc.Id,
+            VALID_MEMBERSHIP_CATEGORY
+        );
         Test.stopTest();
 
         System.assertEquals(
@@ -97,7 +103,10 @@ private class CommunityPunchPassesController_Test {
 
         Test.startTest();
         List<Contact> lstCtsWithCompletedMems = new List<Contact>();
-        lstCtsWithCompletedMems = CommunityPunchPassesController.getCompletedPunchPassesByContact(acc.Id);
+        lstCtsWithCompletedMems = CommunityPunchPassesController.getCompletedPunchPassesByContact(
+            acc.Id,
+            VALID_MEMBERSHIP_CATEGORY
+        );
         Test.stopTest();
         
         System.assertEquals(
@@ -112,6 +121,45 @@ private class CommunityPunchPassesController_Test {
             'Status should be complete'
         );
         
+    }
+
+    @isTest
+    static void testQueryForActivePunchPassesWOCategories() {
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+
+        Test.startTest();
+        List<Contact> lstCtsWithActiveMems = new List<Contact>();
+        lstCtsWithActiveMems = CommunityPunchPassesController.getActivePunchPassesByContact(
+            acc.Id,
+            null
+        );
+        Test.stopTest();
+
+        System.assertEquals(
+            0, 
+            lstCtsWithActiveMems.size(),
+            'Should have received no memberships'
+        );
+
+    }
+
+    @isTest
+    static void testQueryForCompletedPunchPassesWOCategories() {
+        Account acc = [SELECT Id FROM Account LIMIT 1];
+
+        Test.startTest();
+        List<Contact> lstCtsWithActiveMems = new List<Contact>();
+        lstCtsWithActiveMems = CommunityPunchPassesController.getCompletedPunchPassesByContact(
+            acc.Id, 
+            null
+        );
+        Test.stopTest();
+
+        System.assertEquals(
+            0, 
+            lstCtsWithActiveMems.size(),
+            'Should have received no memberships'
+        );
     }
 
 }

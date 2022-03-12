@@ -1,4 +1,4 @@
-import { LightningElement, wire } from 'lwc';
+import { LightningElement, wire, api } from 'lwc';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import getActivePunchPassesByContact from '@salesforce/apex/CommunityPunchPassesController.getActivePunchPassesByContact';
@@ -31,6 +31,10 @@ const COLS = [
 ];
 
 export default class CommunityPunchPasses extends LightningElement {
+	@api membershipCategoryNames = '';
+	@api packageReferenceNameSingular = '';
+	@api packageReferenceNamePlural = '';
+
 	isLoading = true;
 	error;
 
@@ -44,25 +48,39 @@ export default class CommunityPunchPasses extends LightningElement {
 	contactsWithCompletedPunchPasses;
 	wiredContactsWithCompletedPunchPasses = [];
 
-	noPunchPassActivityDescription = 'No Punch Pass Data';
-	noActivePunchPassesDescription = 'No Active Punch Passes';
-	noCompletedPunchPassesDescription = 'No Completed Punch Passes';
-	noActivePunchPassesDescriptionContact = 'This contact does not have any active punch pass memberships'
-	noCompletedPunchPassesDescriptionContact = 'This contact does not have any completed punch pass memberships';
-
 	numHouseholdActivePunchPasses;
 	numHouseholdCompletedPunchPasses;
 
+	get noPunchPassActivityDescription() {
+		return 'No ' + this.packageReferenceNameSingular + ' Data';
+	}
+
+	get noActivePunchPassesDescription() {
+		return 'No Active ' + this.packageReferenceNamePlural;
+	}
+
+	get noCompletedPunchPassesDescription() {
+		return 'No Completed ' + this.packageReferenceNamePlural;
+	}
+
+	get noActivePunchPassesDescriptionContact() {
+		return 'This contact does not have any active ' + this.packageReferenceNamePlural;
+	}
+
+	get noCompletedPunchPassesDescriptionContact() {
+		return 'This contact does not have any completed ' + this.packageReferenceNamePlural;
+	}
+
 	get cardTitle() {
-		return this.accountName != null ? 'Punch Passes for ' + this.accountName : 'Punch Passes';
+		return this.accountName != null ? this.packageReferenceNamePlural + ' for ' + this.accountName : this.packageReferenceNamePlural;
 	}
 
 	get activePunchPassesSectionLabel() {
-		return 'Active Punch Passes (' + this.numHouseholdActivePunchPasses + ')';
+		return 'Active ' + this.packageReferenceNamePlural + ' (' + this.numHouseholdActivePunchPasses + ')';
 	}
 
 	get completedPunchPassesSectionLabel() {
-		return 'Completed Punch Passes (' + this.numHouseholdCompletedPunchPasses + ')';
+		return 'Completed ' + this.packageReferenceNamePlural + ' (' + this.numHouseholdCompletedPunchPasses + ')';
 	}
 
 	get householdHasPunchPassActivity() {
@@ -96,10 +114,13 @@ export default class CommunityPunchPasses extends LightningElement {
         }
     }
 
-	@wire(getActivePunchPassesByContact, { accountId: '$accountId' })
-    wiredActivePunchPasses(result) {
+	@wire(getActivePunchPassesByContact, { 
+		accountId: '$accountId',
+		strMembershipCategoryNames: '$membershipCategoryNames'
+	}) wiredActivePunchPasses(result) {
 		this.wiredContactsWithActivePunchPasses = result;
 		this.numHouseholdActivePunchPasses = 0;
+		console.log(this.membershipCategoryNames);
 	
         if (result.data) {
 			let rows = JSON.parse( JSON.stringify(result.data) );
@@ -113,8 +134,8 @@ export default class CommunityPunchPasses extends LightningElement {
 					0;
 				label = dataParse.fullName + ' - ' + dataParse.numActivePunchPasses;
 				label += dataParse.numActivePunchPasses == 1 ?
-					' Active Punch Pass' :
-					' Active Punch Passes';
+					' Active ' + this.packageReferenceNameSingular :
+					' Active ' + this.packageReferenceNamePlural;
 				dataParse.sectionLabel = label;
 				this.numHouseholdActivePunchPasses += dataParse.numActivePunchPasses;
 			}
@@ -129,8 +150,10 @@ export default class CommunityPunchPasses extends LightningElement {
         }
     }
 
-	@wire(getCompletedPunchPassesByContact, { accountId: '$accountId' })
-    wiredCompletedPunchPasses(result) {
+	@wire(getCompletedPunchPassesByContact, { 
+		accountId: '$accountId',
+		strMembershipCategoryNames: '$membershipCategoryNames'
+	}) wiredCompletedPunchPasses(result) {
 		this.wiredContactsWithCompletedPunchPasses = result;
 		this.numHouseholdCompletedPunchPasses = 0;
 	
@@ -146,8 +169,8 @@ export default class CommunityPunchPasses extends LightningElement {
 					0;
 				label = dataParse.fullName + ' - ' + dataParse.numCompletedPunchPasses;
 				label += dataParse.numCompletedPunchPasses == 1 ?
-					' Completed Punch Pass' :
-					' Completed Punch Passes';
+					' Completed ' + this.packageReferenceNameSingular :
+					' Completed ' + this.packageReferenceNamePlural;
 				dataParse.sectionLabel = label;
 				this.numHouseholdCompletedPunchPasses += dataParse.numCompletedPunchPasses;
 			}
