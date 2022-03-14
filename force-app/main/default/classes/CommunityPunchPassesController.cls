@@ -2,8 +2,10 @@ public with sharing class CommunityPunchPassesController {
 
     private static final String PUNCH_PASS_RECORDTYPE_NAME = 'Punch_Pass_Membership';
     private static final String MEMBERSHIP_STATUS_COMPLETE = 'Complete';
+    private static final String DATETIME_FORMAT = 'MMMMM dd, yyyy h:mm a';
+    private static final String TIMEZONE = 'America/New_York';
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<String> getPassDecrements(
         String membershipId
     ) {
@@ -13,11 +15,15 @@ public with sharing class CommunityPunchPassesController {
               FROM TREX1__Pass_Decrement__c
              WHERE TREX1__Membership_Punch_Pass_Decrement__c = :membershipId
               WITH SECURITY_ENFORCED
+             ORDER BY TREX1__Date__c DESC
              LIMIT 10000
         ];
         if (!lstDecrements.isEmpty()) {
             for (TREX1__Pass_Decrement__c dec : lstDecrements) {
-                String result = String.valueOf(dec.TREX1__Date__c);
+                String result = dec.TREX1__Date__c.format(
+                    DATETIME_FORMAT, 
+                    TIMEZONE
+                );
                 lstResults.add(result);
             }
         }
