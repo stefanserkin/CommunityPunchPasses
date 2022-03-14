@@ -32,11 +32,21 @@
                 required="true"
             />
             <property 
-                name="modalHeader" 
+                name="showExternalSystemButton" 
+                type="Boolean" 
+                label="Show Button to External System" 
+            />
+            <property 
+                name="externalSystemButtonLabel" 
                 type="String" 
-                label="Pop-Up Window Title"
-                default="Punch Pass Decrements"
-                required="true"
+                label="External System Button Label" 
+                default="Schedule Appointments" 
+            />
+            <property 
+                name="externalSystemUrl" 
+                type="String" 
+                label="External System URL" 
+                default="Schedule Appointments" 
             />
         </targetConfig>
     </targetConfigs>

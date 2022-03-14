@@ -1,9 +1,10 @@
 public with sharing class CommunityPunchPassesController {
 
-    private static final String PUNCH_PASS_RECORDTYPE_NAME = 'Punch_Pass_Membership';
-    private static final String MEMBERSHIP_STATUS_COMPLETE = 'Complete';
-    private static final String DATETIME_FORMAT = 'MMMMM dd, yyyy h:mm a';
-    private static final String TIMEZONE = 'America/New_York';
+    @testVisible private static final String PUNCH_PASS_RECORDTYPE_NAME = 'Punch_Pass_Membership';
+    @testVisible private static final String MEMBERSHIP_STATUS_COMPLETE = 'Complete';
+    @testVisible private static final String NO_DECREMENT_HISTORY_MESSAGE = 'No Usage History';
+    @testVisible private static final String DATETIME_FORMAT = 'MMMMM dd, yyyy h:mm a';
+    @testVisible private static final String TIMEZONE = 'America/New_York';
 
     @AuraEnabled
     public static List<String> getPassDecrements(
@@ -20,12 +21,17 @@ public with sharing class CommunityPunchPassesController {
         ];
         if (!lstDecrements.isEmpty()) {
             for (TREX1__Pass_Decrement__c dec : lstDecrements) {
-                String result = dec.TREX1__Date__c.format(
+                String result = String.valueOf(dec.TREX1__Value__c) + ' used on ';
+                result += dec.TREX1__Date__c.format(
                     DATETIME_FORMAT, 
                     TIMEZONE
                 );
                 lstResults.add(result);
             }
+        } else if (lstDecrements.isEmpty()) {
+            lstResults.add(
+                NO_DECREMENT_HISTORY_MESSAGE
+            );
         }
         return lstResults;
     }

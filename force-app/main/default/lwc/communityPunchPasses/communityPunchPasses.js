@@ -13,8 +13,8 @@ import ACCOUNTID_FIELD from '@salesforce/schema/User.AccountId';
 import ACCOUNTNAME_FIELD from '@salesforce/schema/User.Account.Name';
 
 const actions = [
-    { label: 'Download Receipt', name: 'download_receipt' },
-    { label: 'View Decrements', name: 'view_decrements' }
+    { label: 'Download Receipt', name: 'download_receipt', iconName: 'utility:download' },
+    { label: 'View Decrements', name: 'view_decrements', iconName: 'utility:date_time' }
 ];
 
 const COLS = [
@@ -46,7 +46,9 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	@api membershipCategoryNames = '';
 	@api packageReferenceNameSingular = '';
 	@api packageReferenceNamePlural = '';
-	@api modalHeader = '';
+	@api showExternalSystemButton;
+	@api externalSystemButtonLabel;
+	@api externalSystemUrl;
 
 	isLoading = false;
 	error;
@@ -68,6 +70,7 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	numHouseholdActivePunchPasses;
 	numHouseholdCompletedPunchPasses;
 
+	selectedPunchPass;
 	selectedReceiptId = '';
 
 	get noPunchPassActivityDescription() {
@@ -137,6 +140,7 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 		accountId: '$accountId',
 		strMembershipCategoryNames: '$membershipCategoryNames'
 	}) wiredActivePunchPasses(result) {
+		this.isLoading = true;
 		this.wiredContactsWithActivePunchPasses = result;
 		this.numHouseholdActivePunchPasses = 0;
 	
@@ -172,6 +176,7 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 		accountId: '$accountId',
 		strMembershipCategoryNames: '$membershipCategoryNames'
 	}) wiredCompletedPunchPasses(result) {
+		this.isLoading = true;
 		this.wiredContactsWithCompletedPunchPasses = result;
 		this.numHouseholdCompletedPunchPasses = 0;
 	
@@ -241,13 +246,12 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
     }
 
 	viewDecrements(row) {
+		this.selectedPunchPass = row;
 		let rowId = row.Id;
-		console.log(rowId);
 
 		getPassDecrements({ membershipId: rowId })
             .then((result) => {
                 this.decrements = result;
-				this.modalContent = this.decrements.join("\n");
                 this.error = undefined;
 				this.showModal = true;
             })
@@ -265,6 +269,18 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	handleModalClose() {
         this.showModal = false;
     }
+
+	handleExternalSystemNavigation() {
+		if (this.externalSystemUrl != null) {
+			const config = {
+				type: 'standard__webPage',
+				attributes: {
+					url: this.externalSystemUrl
+				}
+			};
+			this[NavigationMixin.Navigate](config);
+		}
+	}
 
 	refreshComponent() {
 		this.isLoading = true;

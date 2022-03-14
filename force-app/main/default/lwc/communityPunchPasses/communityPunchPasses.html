@@ -1,10 +1,10 @@
 <template>
 	<!-- DECREMENT DETAIL MODAL -->
-	
     <template if:true={showModal}>
         <c-community-punch-passes-modal
             modal-header={modalHeader}
-            modal-content={decrements} 
+			punch-pass={selectedPunchPass}
+            decrements={decrements} 
             oncancel={handleModalClose} 
             onokay={handleModalClose} 
             onclose={handleModalClose}
@@ -14,6 +14,22 @@
 
 	<!-- LIGHTNING CARD -->
 	<lightning-card title={cardTitle} icon-name="custom:custom95">
+		<!-- NAVIGATE TO EXTERNAL SYSTEM -->
+		<template if:true={showExternalSystemButton}>
+			<template if:true={householdHasActivePunchPasses}>
+				<lightning-button 
+					slot="actions" 
+					variant="brand-outline" 
+					label={externalSystemButtonLabel} 
+					title={externalSystemButtonLabel} 
+					onclick={handleExternalSystemNavigation}
+					icon-name="utility:event_ext" 
+					icon-position="right" 
+					class="slds-var-m-right_small" 
+				></lightning-button>
+			</template>
+		</template>
+		<!-- REFRESH COMPONENT -->
 		<lightning-button-icon 
 			slot="actions" 
 			icon-name="utility:refresh"  
