@@ -1,4 +1,17 @@
 <template>
+	<!-- DECREMENT DETAIL MODAL -->
+	
+    <template if:true={showModal}>
+        <c-community-punch-passes-modal
+            modal-header={modalHeader}
+            modal-content={decrements} 
+            oncancel={handleModalClose} 
+            onokay={handleModalClose} 
+            onclose={handleModalClose}
+        ></c-community-punch-passes-modal>
+    </template>
+	
+
 	<!-- LIGHTNING CARD -->
 	<lightning-card title={cardTitle} icon-name="custom:custom95">
 		<lightning-button-icon 
@@ -49,6 +62,7 @@
 											columns={cols}
 											key-field="Id"
 											column-widths-mode="auto"
+											onrowaction={handleRowAction}
 											resize-column-disabled
 											hide-checkbox-column
 										></lightning-datatable>
@@ -91,6 +105,7 @@
 											columns={cols}
 											key-field="Id"
 											column-widths-mode="auto"
+											onrowaction={handleRowAction}
 											resize-column-disabled
 											hide-checkbox-column
 										></lightning-datatable>

@@ -13,19 +13,30 @@
                 name="membershipCategoryNames" 
                 type="String" 
                 label="Membership Categories to Display"
-                description="Enter Membership Category Name to display, separated by commas"
+                default="Private Lessons"
+                description="Enter Membership Category Names to display, separated by commas"
+                required="true"
             />
             <property 
                 name="packageReferenceNameSingular" 
                 type="String" 
                 label="Package Reference Name (Singular)"
                 default="Punch Pass"
+                required="true"
             />
             <property 
                 name="packageReferenceNamePlural" 
                 type="String" 
                 label="Package Reference Name (Plural)"
                 default="Punch Passes"
+                required="true"
+            />
+            <property 
+                name="modalHeader" 
+                type="String" 
+                label="Pop-Up Window Title"
+                default="Punch Pass Decrements"
+                required="true"
             />
         </targetConfig>
     </targetConfigs>

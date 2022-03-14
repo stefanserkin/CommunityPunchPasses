@@ -1,42 +1,59 @@
 import { LightningElement, wire, api } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import getActivePunchPassesByContact from '@salesforce/apex/CommunityPunchPassesController.getActivePunchPassesByContact';
 import getCompletedPunchPassesByContact from '@salesforce/apex/CommunityPunchPassesController.getCompletedPunchPassesByContact';
+import getTransactionReceiptId from '@salesforce/apex/CommunityPunchPassesController.getTransactionReceiptId';
+import getPassDecrements from '@salesforce/apex/CommunityPunchPassesController.getPassDecrements';
 
 import USER_ID from '@salesforce/user/Id';
 import CONTACTID_FIELD from '@salesforce/schema/User.ContactId';
 import ACCOUNTID_FIELD from '@salesforce/schema/User.AccountId';
 import ACCOUNTNAME_FIELD from '@salesforce/schema/User.Account.Name';
 
+const actions = [
+    { label: 'Download Receipt', name: 'download_receipt' },
+    { label: 'View Decrements', name: 'view_decrements' }
+];
+
 const COLS = [
     { label: 'Package', fieldName: 'TREX1__Type__c', type: 'text', hideDefaultActions: true },
-    { label: 'Used', fieldName: 'TREX1__Total_Value__c', type: 'number', initialWidth: 144, hideDefaultActions: true,
+    { label: 'Used', fieldName: 'TREX1__Total_Value__c', type: 'number', fixedWidth: 144, hideDefaultActions: true,
 		cellAttributes: { 
 			alignment: 'left' 
 		}
 	},
-    { label: 'Remaining', fieldName: 'TREX1__Remaining_Value__c', type: 'number', initialWidth: 144, hideDefaultActions: true,
+    { label: 'Remaining', fieldName: 'TREX1__Remaining_Value__c', type: 'number', fixedWidth: 144, hideDefaultActions: true,
 		cellAttributes: { 
 			alignment: 'left' 
 		}
 	},
-	{ label: 'Expiration Date', fieldName: 'TREX1__End_Date__c', type: 'date', initialWidth: 144, hideDefaultActions: true, 
+	{ label: 'Expiration Date', fieldName: 'TREX1__End_Date__c', type: 'date', fixedWidth: 144, hideDefaultActions: true, 
 		typeAttributes:{
 			year: "numeric",
 			month: "long",
 			day: "2-digit"
 		}
-	}
+	},
+	{
+        type: 'action',
+        typeAttributes: { rowActions: actions },
+    }
 ];
 
-export default class CommunityPunchPasses extends LightningElement {
+export default class CommunityPunchPasses extends NavigationMixin(LightningElement) {
 	@api membershipCategoryNames = '';
 	@api packageReferenceNameSingular = '';
 	@api packageReferenceNamePlural = '';
+	@api modalHeader = '';
 
-	isLoading = true;
+	isLoading = false;
 	error;
+
+	showModal = false;
+	modalContent;
+	decrements = [];
 
 	contactId;
 	accountId;
@@ -50,6 +67,8 @@ export default class CommunityPunchPasses extends LightningElement {
 
 	numHouseholdActivePunchPasses;
 	numHouseholdCompletedPunchPasses;
+
+	selectedReceiptId = '';
 
 	get noPunchPassActivityDescription() {
 		return 'No ' + this.packageReferenceNameSingular + ' Data';
@@ -120,7 +139,6 @@ export default class CommunityPunchPasses extends LightningElement {
 	}) wiredActivePunchPasses(result) {
 		this.wiredContactsWithActivePunchPasses = result;
 		this.numHouseholdActivePunchPasses = 0;
-		console.log(this.membershipCategoryNames);
 	
         if (result.data) {
 			let rows = JSON.parse( JSON.stringify(result.data) );
@@ -184,9 +202,75 @@ export default class CommunityPunchPasses extends LightningElement {
         }
     }
 
+	handleRowAction(event) {
+        const actionName = event.detail.action.name;
+        const row = event.detail.row;
+		const transactionId = row.TREX1__Purchasing_Transaction__c;
+        switch (actionName) {
+            case 'download_receipt':
+                this.downloadReceipt(transactionId);
+                break;
+            case 'view_decrements':
+                this.viewDecrements(row);
+                break;
+            default:
+        }
+    }
+
+	downloadReceipt(transactionId) {
+
+		getTransactionReceiptId({ transactionId: transactionId })
+            .then((result) => {
+                this.selectedReceiptId = result;
+				let baseUrl = this.getBaseUrl();
+				let downloadUrl = baseUrl+'servlet/servlet.FileDownload?file='+this.selectedReceiptId;
+				this[NavigationMixin.Navigate]({
+						type: 'standard__webPage',
+						attributes: {
+							url: downloadUrl
+						}
+					}, false 
+				);
+                this.error = undefined;
+            })
+            .catch((error) => {
+                this.error = error;
+                this.selectedReceiptId = undefined;
+            });
+
+    }
+
+	viewDecrements(row) {
+		let rowId = row.Id;
+		console.log(rowId);
+
+		getPassDecrements({ membershipId: rowId })
+            .then((result) => {
+                this.decrements = result;
+				this.modalContent = this.decrements.join("\n");
+                this.error = undefined;
+				this.showModal = true;
+            })
+            .catch((error) => {
+                this.error = error;
+                this.decrements = undefined;
+            });
+	}
+
+	getBaseUrl(){
+        let baseUrl = 'https://'+location.host+'/';
+        return baseUrl;
+    }
+
+	handleModalClose() {
+        this.showModal = false;
+    }
+
 	refreshComponent() {
+		this.isLoading = true;
 		refreshApex(this.wiredContactsWithActivePunchPasses);
 		refreshApex(this.wiredContactsWithCompletedPunchPasses);
+		this.isLoading = false;
 	}
 
 
