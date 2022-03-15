@@ -8,4 +8,4 @@ A component to allow community users to view household Punch Pass Membership dat
 
 ## Installation
 
-- [1.0](https://test.salesforce.com/packaging/installPackage.apexp?p0=04t3I000000DYo5)
+- [Version 1.1](https://test.salesforce.com/packaging/installPackage.apexp?p0=04t3I000000DYoF)
