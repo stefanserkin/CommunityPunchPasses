@@ -46,7 +46,7 @@
                 name="externalSystemUrl" 
                 type="String" 
                 label="External System URL" 
-                default="Schedule Appointments" 
+                placeholder="https://www.mindbodyonline.com/explore" 
             />
         </targetConfig>
     </targetConfigs>

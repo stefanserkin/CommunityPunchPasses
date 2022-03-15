@@ -14,7 +14,7 @@ import ACCOUNTNAME_FIELD from '@salesforce/schema/User.Account.Name';
 
 const actions = [
     { label: 'Download Receipt', name: 'download_receipt', iconName: 'utility:download' },
-    { label: 'View Decrements', name: 'view_decrements', iconName: 'utility:date_time' }
+    { label: 'View Usage History', name: 'view_decrements', iconName: 'utility:date_time' }
 ];
 
 const COLS = [
@@ -121,20 +121,20 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	}
 
 	@wire(getRecord, {
-        recordId: USER_ID,
-        fields: [CONTACTID_FIELD, ACCOUNTID_FIELD, ACCOUNTNAME_FIELD]
-    }) wireuser({
-        error,
-        data
-    }) {
-        if (error) {
-        	this.error = error; 
-        } else if (data) {
-            this.contactId = data.fields.ContactId.value;
+		recordId: USER_ID,
+		fields: [CONTACTID_FIELD, ACCOUNTID_FIELD, ACCOUNTNAME_FIELD]
+	}) wireuser({
+		error,
+		data
+	}) {
+		if (error) {
+			this.error = error; 
+		} else if (data) {
+			this.contactId = data.fields.ContactId.value;
 			this.accountId = data.fields.AccountId.value;
 			this.accountName = getFieldValue(data, ACCOUNTNAME_FIELD);
-        }
-    }
+		}
+	}
 
 	@wire(getActivePunchPassesByContact, { 
 		accountId: '$accountId',
