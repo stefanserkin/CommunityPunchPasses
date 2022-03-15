@@ -4,7 +4,8 @@ public with sharing class CommunityPunchPassesController {
     @testVisible private static final String MEMBERSHIP_STATUS_COMPLETE = 'Complete';
     @testVisible private static final String NO_DECREMENT_HISTORY_MESSAGE = 'No Usage History';
     @testVisible private static final String DATETIME_FORMAT = 'MMMMM dd, yyyy h:mm a';
-    @testVisible private static final String TIMEZONE = 'America/New_York';
+
+    private static String userTimeZone = String.valueOf(UserInfo.getTimeZone());
 
     @AuraEnabled
     public static List<String> getPassDecrements(
@@ -16,7 +17,7 @@ public with sharing class CommunityPunchPassesController {
               FROM TREX1__Pass_Decrement__c
              WHERE TREX1__Membership_Punch_Pass_Decrement__c = :membershipId
               WITH SECURITY_ENFORCED
-             ORDER BY TREX1__Date__c DESC
+             ORDER BY TREX1__Date__c ASC
              LIMIT 10000
         ];
         if (!lstDecrements.isEmpty()) {
@@ -24,7 +25,7 @@ public with sharing class CommunityPunchPassesController {
                 String result = String.valueOf(dec.TREX1__Value__c) + ' used on ';
                 result += dec.TREX1__Date__c.format(
                     DATETIME_FORMAT, 
-                    TIMEZONE
+                    userTimeZone
                 );
                 lstResults.add(result);
             }
