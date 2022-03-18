@@ -49,6 +49,7 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	@api showExternalSystemButton;
 	@api externalSystemButtonLabel;
 	@api externalSystemUrl;
+	@api openExternalSystemUrlInNewTab;
 
 	isLoading = false;
 	error;
@@ -270,15 +271,20 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
         this.showModal = false;
     }
 
+	get targetBehavior() {
+		return this.openExternalSystemUrlInNewTab ? '_blank' : '_self';
+	}
+
 	handleExternalSystemNavigation() {
 		if (this.externalSystemUrl != null) {
-			const config = {
+			this[NavigationMixin.GenerateUrl]({
 				type: 'standard__webPage',
 				attributes: {
 					url: this.externalSystemUrl
 				}
-			};
-			this[NavigationMixin.Navigate](config);
+			}).then(generatedUrl => {
+				window.open(generatedUrl, this.targetBehavior);
+			});
 		}
 	}
 

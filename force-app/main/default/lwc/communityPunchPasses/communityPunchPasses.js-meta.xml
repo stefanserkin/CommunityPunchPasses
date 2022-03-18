@@ -48,6 +48,11 @@
                 label="External System URL" 
                 placeholder="https://www.mindbodyonline.com/explore" 
             />
+            <property 
+                name="openExternalSystemUrlInNewTab" 
+                type="Boolean" 
+                label="Open External System in New Tab/Window"
+            />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
