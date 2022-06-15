@@ -10,6 +10,14 @@
     <targetConfigs>
         <targetConfig targets="lightningCommunity__Default">
             <property 
+                name="cardIcon" 
+                type="String"
+                label="SLDS Icon Name" 
+                default="custom:custom95"
+                description="Use icon names in the SLDS library"
+                required="true"
+            />
+            <property 
                 name="membershipCategoryNames" 
                 type="String" 
                 label="Membership Categories to Display"

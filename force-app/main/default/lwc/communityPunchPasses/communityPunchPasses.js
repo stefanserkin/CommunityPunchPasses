@@ -50,6 +50,7 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	@api externalSystemButtonLabel;
 	@api externalSystemUrl;
 	@api openExternalSystemUrlInNewTab;
+	@api cardIcon;
 
 	isLoading = false;
 	error;
