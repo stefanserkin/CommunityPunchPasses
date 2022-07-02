@@ -55,12 +55,32 @@ public with sharing class CommunityPunchPassesController {
     @AuraEnabled(cacheable=true)
     public static List<Contact> getActivePunchPassesByContact(
         String accountId,
-        String strMembershipCategoryNames
+        String strMembershipCategoryNames,
+        String strRowTargetUrlField
     ) {
+        List<Contact> lstContacts = new List<Contact>();
         List<String> lstMembershipCategoryNames = getListOfCategoriesFromString(
             strMembershipCategoryNames
         );
+        String strQuery = 'SELECT Id, FirstName, LastName, ';
+        strQuery += '(SELECT Id, Name, TREX1__Contact__c, TREX1__Contact__r.Name, TREX1__Contact__r.FirstName, TREX1__memb_Type__r.Name, TREX1__Type__c, TREX1__Category_Name__c, TREX1__Status__c, TREX1__Account__r.Name, TREX1__Start_Date__c, TREX1__End_Date__c, TREX1__Purchasing_Transaction__c, TREX1__Remaining_Value__c, TREX1__Stored_Value__c, TREX1__Total_Value__c, CreatedDate';
+        if (!String.isBlank(strRowTargetUrlField)) {
+            strQuery += ', ' + strRowTargetUrlField + ' ';
+        }
+        strQuery += ' FROM TREX1__Memberships__r WHERE RecordType.DeveloperName = \'' + PUNCH_PASS_RECORDTYPE_NAME + '\'';
+        strQuery += ' AND TREX1__Category_Name__c IN (\'' + String.join(lstMembershipCategoryNames, '\',\'') + '\')';
+        strQuery += ' AND TREX1__Remaining_Value__c > 0 AND TREX1__Status__c != \'' + MEMBERSHIP_STATUS_COMPLETE + '\'';
+        strQuery += ' AND (TREX1__End_Date__c >= TODAY OR TREX1__End_Date__c = NULL) ORDER BY TREX1__End_Date__c ASC NULLS LAST)';
+        strQuery += ' FROM Contact WHERE AccountId = \'' + accountId + '\'';
+        strQuery += ' AND Id IN (SELECT TREX1__Contact__c FROM TREX1__Membership__c WHERE RecordType.DeveloperName = \'' + PUNCH_PASS_RECORDTYPE_NAME + '\'';
+        strQuery += ' AND TREX1__Category_Name__c IN (\'' + String.join(lstMembershipCategoryNames, '\',\'') + '\')';
+        strQuery += ' AND TREX1__Remaining_Value__c > 0 AND TREX1__Status__c != \'' + MEMBERSHIP_STATUS_COMPLETE + '\')';
+        strQuery += ' WITH SECURITY_ENFORCED ORDER BY FirstName ASC LIMIT 10000';
+        lstContacts = Database.query(strQuery);
 
+        return lstContacts;
+
+        /*
         return [
             SELECT Id, FirstName, LastName, 
                    (SELECT Id, Name, TREX1__Contact__c, TREX1__Contact__r.Name, TREX1__Contact__r.FirstName,
@@ -87,6 +107,7 @@ public with sharing class CommunityPunchPassesController {
              ORDER BY FirstName ASC
              LIMIT 10000
         ];
+        */
     }
 
     @AuraEnabled(cacheable=true)

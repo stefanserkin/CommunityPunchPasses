@@ -61,6 +61,17 @@
                 type="Boolean" 
                 label="Open External System in New Tab/Window"
             />
+            <property 
+                name="showGoToRowUrlAction" 
+                type="Boolean" 
+                label="Show Go To URL Action"
+                description="If selecting this option, must include a Row URL Field API Name"
+            />
+            <property 
+                name="rowTargetUrlField" 
+                type="String" 
+                label="Row URL Field API Name"
+            />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

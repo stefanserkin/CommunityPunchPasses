@@ -14,7 +14,8 @@ import ACCOUNTNAME_FIELD from '@salesforce/schema/User.Account.Name';
 
 const actions = [
     { label: 'Download Receipt', name: 'download_receipt', iconName: 'utility:download' },
-    { label: 'View Usage History', name: 'view_decrements', iconName: 'utility:date_time' }
+    { label: 'View Usage History', name: 'view_decrements', iconName: 'utility:date_time' },
+	{ label: 'Schedule Appointment', name: 'schedule_appointment', iconName: 'utility:date_time' }
 ];
 
 const COLS = [
@@ -51,6 +52,9 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	@api externalSystemUrl;
 	@api openExternalSystemUrlInNewTab;
 	@api cardIcon;
+
+	@api showGoToRowUrlAction = false;
+	@api rowTargetUrlField;
 
 	isLoading = false;
 	error;
@@ -140,13 +144,15 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 
 	@wire(getActivePunchPassesByContact, { 
 		accountId: '$accountId',
-		strMembershipCategoryNames: '$membershipCategoryNames'
+		strMembershipCategoryNames: '$membershipCategoryNames',
+		strRowTargetUrlField: '$rowTargetUrlField'
 	}) wiredActivePunchPasses(result) {
 		this.isLoading = true;
 		this.wiredContactsWithActivePunchPasses = result;
 		this.numHouseholdActivePunchPasses = 0;
 	
         if (result.data) {
+			console.log('got data');
 			let rows = JSON.parse( JSON.stringify(result.data) );
 			for (let i = 0; i < rows.length; i++) {
                 let dataParse = rows[i];
@@ -161,6 +167,7 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 					' Active ' + this.packageReferenceNameSingular :
 					' Active ' + this.packageReferenceNamePlural;
 				dataParse.sectionLabel = label;
+				console.log('show row action? ' + this.showGoToRowUrlAction);
 				this.numHouseholdActivePunchPasses += dataParse.numActivePunchPasses;
 			}
 			
@@ -220,6 +227,18 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
             case 'view_decrements':
                 this.viewDecrements(row);
                 break;
+			case 'schedule_appointment':
+				// go to url
+
+				console.log('url is ' + row[this.rowTargetUrlField]);
+				this[NavigationMixin.Navigate]({
+						type: 'standard__webPage',
+						attributes: {
+							url: row[this.rowTargetUrlField]
+						}
+					}, false 
+				);
+				break;
             default:
         }
     }
