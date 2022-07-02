@@ -62,15 +62,16 @@
                 label="Open External System in New Tab/Window"
             />
             <property 
-                name="showGoToRowUrlAction" 
+                name="showScheduleAppointmentAction" 
                 type="Boolean" 
-                label="Show Go To URL Action"
-                description="If selecting this option, must include a Row URL Field API Name"
+                label="Show Schedule Appointment Row Action"
+                description="If selecting this option, must include a Schedule Appointment Action URL"
             />
             <property 
-                name="rowTargetUrlField" 
+                name="scheduleAppointmentUrl" 
                 type="String" 
-                label="Row URL Field API Name"
+                label="Schedule Appointment Action URL"
+                description="The API Name of the field on the Membership object with the target URL"
             />
         </targetConfig>
     </targetConfigs>

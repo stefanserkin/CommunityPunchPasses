@@ -12,38 +12,9 @@ import CONTACTID_FIELD from '@salesforce/schema/User.ContactId';
 import ACCOUNTID_FIELD from '@salesforce/schema/User.AccountId';
 import ACCOUNTNAME_FIELD from '@salesforce/schema/User.Account.Name';
 
-const actions = [
-    { label: 'Download Receipt', name: 'download_receipt', iconName: 'utility:download' },
-    { label: 'View Usage History', name: 'view_decrements', iconName: 'utility:date_time' },
-	{ label: 'Schedule Appointment', name: 'schedule_appointment', iconName: 'utility:date_time' }
-];
-
-const COLS = [
-    { label: 'Package', fieldName: 'TREX1__Type__c', type: 'text', hideDefaultActions: true },
-    { label: 'Used', fieldName: 'TREX1__Total_Value__c', type: 'number', fixedWidth: 144, hideDefaultActions: true,
-		cellAttributes: { 
-			alignment: 'left' 
-		}
-	},
-    { label: 'Remaining', fieldName: 'TREX1__Remaining_Value__c', type: 'number', fixedWidth: 144, hideDefaultActions: true,
-		cellAttributes: { 
-			alignment: 'left' 
-		}
-	},
-	{ label: 'Expiration Date', fieldName: 'TREX1__End_Date__c', type: 'date', fixedWidth: 144, hideDefaultActions: true, 
-		typeAttributes:{
-			year: "numeric",
-			month: "long",
-			day: "2-digit"
-		}
-	},
-	{
-        type: 'action',
-        typeAttributes: { rowActions: actions },
-    }
-];
 
 export default class CommunityPunchPasses extends NavigationMixin(LightningElement) {
+
 	@api membershipCategoryNames = '';
 	@api packageReferenceNameSingular = '';
 	@api packageReferenceNamePlural = '';
@@ -53,8 +24,10 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	@api openExternalSystemUrlInNewTab;
 	@api cardIcon;
 
-	@api showGoToRowUrlAction = false;
-	@api rowTargetUrlField;
+	@api showScheduleAppointmentAction = false;
+	@api scheduleAppointmentUrl;
+
+	cols;
 
 	isLoading = false;
 	error;
@@ -67,7 +40,6 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	accountId;
 	accountName;
 
-	cols = COLS;
 	contactsWithActivePunchPasses;
 	wiredContactsWithActivePunchPasses = [];
 	contactsWithCompletedPunchPasses;
@@ -78,6 +50,50 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 
 	selectedPunchPass;
 	selectedReceiptId = '';
+
+	constructor() {
+        super();
+        this.cols = [
+			{ label: 'Package', fieldName: 'TREX1__Type__c', type: 'text', hideDefaultActions: true },
+			{ label: 'Used', fieldName: 'TREX1__Total_Value__c', type: 'number', fixedWidth: 144, hideDefaultActions: true,
+				cellAttributes: { 
+					alignment: 'left' 
+				}
+			},
+			{ label: 'Remaining', fieldName: 'TREX1__Remaining_Value__c', type: 'number', fixedWidth: 144, hideDefaultActions: true,
+				cellAttributes: { 
+					alignment: 'left' 
+				}
+			},
+			{ label: 'Expiration Date', fieldName: 'TREX1__End_Date__c', type: 'date', fixedWidth: 144, hideDefaultActions: true, 
+				typeAttributes:{
+					year: "numeric",
+					month: "long",
+					day: "2-digit"
+				}
+			},
+			{
+				type: 'action',
+				typeAttributes: { rowActions: this.getRowActions }
+			}
+		];
+    }
+
+	getRowActions(row, doneCallback) {
+		if (row.showScheduleAppointmentAction) {
+			doneCallback([
+				{ label: 'Download Receipt', name: 'download_receipt', iconName: 'action:download' },
+				{ label: 'View Usage History', name: 'view_decrements', iconName: 'action:preview' },
+				{ label: 'Schedule Appointment', name: 'schedule_appointment', iconName: 'action:new_event' }
+			]);
+
+		} else {
+			doneCallback([
+				{ label: 'Download Receipt', name: 'download_receipt', iconName: 'action:download' },
+				{ label: 'View Usage History', name: 'view_decrements', iconName: 'action:preview' }
+			]);
+		}
+    }
 
 	get noPunchPassActivityDescription() {
 		return 'No ' + this.packageReferenceNameSingular + ' Data';
@@ -145,17 +161,16 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 	@wire(getActivePunchPassesByContact, { 
 		accountId: '$accountId',
 		strMembershipCategoryNames: '$membershipCategoryNames',
-		strRowTargetUrlField: '$rowTargetUrlField'
+		strRowTargetUrlField: '$scheduleAppointmentUrl'
 	}) wiredActivePunchPasses(result) {
 		this.isLoading = true;
 		this.wiredContactsWithActivePunchPasses = result;
 		this.numHouseholdActivePunchPasses = 0;
 	
         if (result.data) {
-			console.log('got data');
 			let rows = JSON.parse( JSON.stringify(result.data) );
-			for (let i = 0; i < rows.length; i++) {
-                let dataParse = rows[i];
+			console.log(rows);
+			rows.forEach(dataParse => {
 				let label = '';
 				dataParse.fullName = dataParse.FirstName + ' ' + dataParse.LastName;
 				dataParse.numActivePunchPasses = 
@@ -167,14 +182,17 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 					' Active ' + this.packageReferenceNameSingular :
 					' Active ' + this.packageReferenceNamePlural;
 				dataParse.sectionLabel = label;
-				console.log('show row action? ' + this.showGoToRowUrlAction);
+				dataParse.TREX1__Memberships__r.forEach(element => {
+					element.showScheduleAppointmentAction = this.showScheduleAppointmentAction;
+				});
 				this.numHouseholdActivePunchPasses += dataParse.numActivePunchPasses;
-			}
-			
+			}); 
+			console.table(rows);
             this.contactsWithActivePunchPasses = rows;
             this.error = undefined;
 			this.isLoading = false;
         } else if (result.error) {
+			console.error(result.error);
             this.error = result.error;
             this.contactsWithActivePunchPasses = undefined;
 			this.isLoading = false;
@@ -228,16 +246,14 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
                 this.viewDecrements(row);
                 break;
 			case 'schedule_appointment':
-				// go to url
-
-				console.log('url is ' + row[this.rowTargetUrlField]);
-				this[NavigationMixin.Navigate]({
-						type: 'standard__webPage',
-						attributes: {
-							url: row[this.rowTargetUrlField]
-						}
-					}, false 
-				);
+				this[NavigationMixin.GenerateUrl]({
+					type: 'standard__webPage',
+					attributes: {
+						url: row[this.scheduleAppointmentUrl]
+					}
+				}).then(generatedUrl => {
+					window.open(generatedUrl, this.targetBehavior);
+				});
 				break;
             default:
         }
