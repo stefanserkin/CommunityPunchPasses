@@ -15,42 +15,6 @@ import ACCOUNTNAME_FIELD from '@salesforce/schema/User.Account.Name';
 
 export default class CommunityPunchPasses extends NavigationMixin(LightningElement) {
 
-	@api membershipCategoryNames = '';
-	@api packageReferenceNameSingular = '';
-	@api packageReferenceNamePlural = '';
-	@api showExternalSystemButton;
-	@api externalSystemButtonLabel;
-	@api externalSystemUrl;
-	@api openExternalSystemUrlInNewTab;
-	@api cardIcon;
-
-	@api showScheduleAppointmentAction = false;
-	@api scheduleAppointmentUrl;
-
-	cols;
-
-	isLoading = false;
-	error;
-
-	showModal = false;
-	modalContent;
-	decrements = [];
-
-	contactId;
-	accountId;
-	accountName;
-
-	contactsWithActivePunchPasses;
-	wiredContactsWithActivePunchPasses = [];
-	contactsWithCompletedPunchPasses;
-	wiredContactsWithCompletedPunchPasses = [];
-
-	numHouseholdActivePunchPasses;
-	numHouseholdCompletedPunchPasses;
-
-	selectedPunchPass;
-	selectedReceiptId = '';
-
 	constructor() {
         super();
         this.cols = [
@@ -94,6 +58,42 @@ export default class CommunityPunchPasses extends NavigationMixin(LightningEleme
 			]);
 		}
     }
+
+	@api membershipCategoryNames = '';
+	@api packageReferenceNameSingular = '';
+	@api packageReferenceNamePlural = '';
+	@api showExternalSystemButton;
+	@api externalSystemButtonLabel;
+	@api externalSystemUrl;
+	@api openExternalSystemUrlInNewTab;
+	@api cardIcon;
+
+	@api showScheduleAppointmentAction = false;
+	@api scheduleAppointmentUrl;
+
+	cols;
+
+	isLoading = false;
+	error;
+
+	showModal = false;
+	modalContent;
+	decrements = [];
+
+	contactId;
+	accountId;
+	accountName;
+
+	contactsWithActivePunchPasses;
+	wiredContactsWithActivePunchPasses = [];
+	contactsWithCompletedPunchPasses;
+	wiredContactsWithCompletedPunchPasses = [];
+
+	numHouseholdActivePunchPasses;
+	numHouseholdCompletedPunchPasses;
+
+	selectedPunchPass;
+	selectedReceiptId = '';
 
 	get noPunchPassActivityDescription() {
 		return 'No ' + this.packageReferenceNameSingular + ' Data';
