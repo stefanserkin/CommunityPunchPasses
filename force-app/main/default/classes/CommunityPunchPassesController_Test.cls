@@ -13,6 +13,7 @@ private class CommunityPunchPassesController_Test {
     private static final Integer NUMBER_OF_COMPLETED_MEMBERSHIPS = 1;
     private static final String VALID_MEMBERSHIP_CATEGORY = 'Pilates';
     private static final String RECEIPT_NAME = 'Receipt-039483628948267346';
+    private static final String URL_FIELD_NAME = 'LastModifiedDate';
 
     @TestSetup
     static void makeData() {
@@ -153,7 +154,8 @@ private class CommunityPunchPassesController_Test {
         List<Contact> lstCtsWithActiveMems = new List<Contact>();
         lstCtsWithActiveMems = CommunityPunchPassesController.getActivePunchPassesByContact(
             acc.Id,
-            VALID_MEMBERSHIP_CATEGORY
+            VALID_MEMBERSHIP_CATEGORY,
+            URL_FIELD_NAME
         );
         Test.stopTest();
 
@@ -206,7 +208,8 @@ private class CommunityPunchPassesController_Test {
         List<Contact> lstCtsWithActiveMems = new List<Contact>();
         lstCtsWithActiveMems = CommunityPunchPassesController.getActivePunchPassesByContact(
             acc.Id,
-            null
+            null,
+            URL_FIELD_NAME
         );
         Test.stopTest();
 
